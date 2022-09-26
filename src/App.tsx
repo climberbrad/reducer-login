@@ -57,6 +57,13 @@ function App() {
 
   const loginForm = (
       (
+          <>
+          {error && (
+              <div className="flex justify-center container mt-4 mx-auto bg-red-300 text-semibold rounded-xl shadow border py-4 mb-2 w-1/4">
+                  <div className={'mr-2'}>{cautionSVG}</div>
+                  <div className='font-semibold text-sm mt-0.5'>{error}</div>
+              </div>
+          )}
           <form onSubmit={handleSubmit}>
           <div className="container mx-auto bg-blue-300 rounded-xl shadow border pt-8 w-1/4">
             <div className='flex justify-center'>
@@ -80,20 +87,15 @@ function App() {
             </div>
           </div>
           </form>
+          </>
       )
   )
 
 
   return (
-      <div className="App mt-10">
-        {error && (
-            <div className="flex justify-center container mt-4 mx-auto bg-red-300 text-semibold rounded-xl shadow border py-4 mb-2 w-1/4">
-                <div className={'mr-2'}>{cautionSVG}</div>
-                <div className='font-semibold text-sm mt-0.5'>{error}</div>
-            </div>
-        )}
+      <main className="App mt-10">
         {loggedIn ?  loggedInPage: loginForm}
-      </div>
+      </main>
   );
 }
 

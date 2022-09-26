@@ -57,7 +57,7 @@ function App() {
               </div>
               <div className='flex justify-between'>
                 <p className="text-gray-500 text-lg pr-2 text-lg font-semibold">password</p>
-                <input onChange={(e) => setPassword(e.target.value)} type={"text"} className='w-36 rounded h-6 mt-1 focus:outline-none' />
+                <input onChange={(e) => setPassword(e.target.value)} type={"password"} className='w-36 rounded h-6 mt-1 focus:outline-none' />
               </div>
               <div className='flex justify-end mt-8'>
                 <button onClick={handleSubmit} className={buttonCss}>Login</button>

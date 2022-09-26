@@ -13,7 +13,7 @@ const cloudSVG = (
 
 function App() {
 
-  const [loggedIn, setLoggedIn] = useState<boolean>(false)
+  const [loggedIn, setLoggedIn] = useState<boolean>(false);
   const [userName, setUserName] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string>()
@@ -21,12 +21,20 @@ function App() {
   const handleSubmit = async () => {
     try {
       await login(userName, password );
-      setLoggedIn(true)
-      setError(undefined)
+      setLoggedIn(true);
+      setError(undefined);
     } catch (error) {
-      setLoggedIn(false)
-      setError('Invalid username or password. Please try again.')
+      setLoggedIn(false);
+      setError('Invalid username or password. Please try again.');
+      setUserName('');
+      setPassword('');
     }
+  }
+
+  const handleLogout = () => {
+      setLoggedIn(false);
+      setUserName('');
+      setPassword('');
   }
 
 
@@ -35,7 +43,7 @@ function App() {
           <div className='font-semibold mt-32 text-5xl'><span className='text-blue-400 font-normal'>{userName}</span> is logged in!</div>
           <div className='flex items-center justify-center mt-8'>
               <span className='w-24'>
-            <button onClick={() => setLoggedIn(false)} className={buttonCss}>Log out</button>
+            <button onClick={handleLogout} className={buttonCss}>Log out</button>
               </span>
           </div>
       </div>
@@ -53,11 +61,11 @@ function App() {
             <div className='p-2 mx-16 my-8'>
               <div className='flex justify-between'>
                 <p className="text-gray-500 text-lg pr-2 text-lg font-semibold">user name</p>
-                <input onChange={(e) => setUserName(e.target.value)} type={"text"} autoFocus className='w-36 rounded h-6 mt-1 focus:outline-none' />
+                <input value={userName} onChange={(e) => setUserName(e.target.value)} type={"text"} autoFocus className='w-36 rounded h-6 mt-1 focus:outline-none' />
               </div>
               <div className='flex justify-between'>
                 <p className="text-gray-500 text-lg pr-2 text-lg font-semibold">password</p>
-                <input onChange={(e) => setPassword(e.target.value)} type={"password"} className='w-36 rounded h-6 mt-1 focus:outline-none' />
+                <input value={password} onChange={(e) => setPassword(e.target.value)} type={"password"} className='w-36 rounded h-6 mt-1 focus:outline-none' />
               </div>
               <div className='flex justify-end mt-8'>
                 <button onClick={handleSubmit} className={buttonCss}>Login</button>

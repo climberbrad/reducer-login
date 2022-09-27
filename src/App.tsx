@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useReducer} from 'react';
 import './App.css';
 import {login} from "./Utils";
 
@@ -16,37 +16,72 @@ const cautionSVG = (
     </svg>
 )
 
-function App() {
+interface loginAction {
+    type: string,
+    userName: string,
+    password: string,
+    loggedIn: boolean,
+    error: string,
+}
 
-  const [loggedIn, setLoggedIn] = useState<boolean>(false);
-  const [userName, setUserName] = useState<string>('');
-  const [password, setPassword] = useState<string>('');
-  const [error, setError] = useState<string>()
+const initialState: loginAction  = {
+    type: '',
+    userName: '',
+    password: '',
+    loggedIn: false,
+    error: '',
+}
+
+const loginReducer = (state: loginAction, action: loginAction): loginAction => {
+    switch (action.type) {
+        case 'login': return {
+            ...state,
+            loggedIn: true,
+            error: ''
+        }
+        case 'failure': return {
+            ...state,
+            error: 'Invalid username or password. Please try again.',
+            loggedIn: false,
+            userName: '',
+            password: '',
+        }
+        case 'setUserName': return {
+            ...state,
+            userName: action.userName,
+        }
+        case 'setPassword': return {
+            ...state,
+            password: action.password,
+        }
+        case 'logout': return initialState
+        default: return state;
+    }
+}
+
+function App() {
+    const [state, dispatch] = useReducer(loginReducer,initialState);
+
+  const handleUserName = (event: React.ChangeEvent<HTMLInputElement>) => dispatch({...state, type: 'setUserName', userName: event.target.value});
+  const handlePassword = (event: React.ChangeEvent<HTMLInputElement>) => dispatch({...state, type: 'setPassword', password: event.target.value});
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
       event.preventDefault()
     try {
-      await login(userName, password );
-      setLoggedIn(true);
-      setError(undefined);
+      await login(state.userName, state.password );
+      dispatch({...state, type: 'login'})
     } catch (error) {
-      setLoggedIn(false);
-      setError('Invalid username or password. Please try again.');
-      setUserName('');
-      setPassword('');
+      dispatch({...state, type:'failure'})
     }
   }
 
   const handleLogout = () => {
-      setLoggedIn(false);
-      setUserName('');
-      setPassword('');
+      dispatch({...state, type: 'logout'})
   }
-
 
   const loggedInPage = (
       <div>
-          <div className='font-semibold mt-32 text-5xl'><span className='text-blue-400 font-normal'>{userName}</span> is logged in!</div>
+          <div className='font-semibold mt-32 text-5xl'><span className='text-blue-400 font-normal'>{state.userName}</span> is logged in!</div>
           <div className='flex items-center justify-center mt-8'>
               <span className='w-24'>
             <button onClick={handleLogout} className={buttonCss}>Log out</button>
@@ -58,10 +93,10 @@ function App() {
   const loginForm = (
       (
           <>
-          {error && (
+          {state.error && (
               <div className="flex justify-center container mt-4 mx-auto bg-red-300 text-semibold rounded-xl shadow border py-4 mb-2 w-1/4">
                   <div className={'mr-2'}>{cautionSVG}</div>
-                  <div className='font-semibold text-sm mt-0.5'>{error}</div>
+                  <div className='font-semibold text-sm mt-0.5'>{state.error}</div>
               </div>
           )}
           <form onSubmit={handleSubmit}>
@@ -75,11 +110,11 @@ function App() {
             <div className='p-2 mx-16 my-8'>
               <div className='flex justify-between'>
                 <p className="text-gray-500 text-lg pr-2 text-lg font-semibold">user name</p>
-                <input value={userName} onChange={(e) => setUserName(e.target.value)} type={"text"} autoFocus className='w-36 rounded h-6 mt-1 focus:outline-none' />
+                <input value={state.userName} onChange={handleUserName} type={"text"} autoFocus className='w-36 rounded h-6 mt-1 focus:outline-none' />
               </div>
               <div className='flex justify-between'>
                 <p className="text-gray-500 text-lg pr-2 text-lg font-semibold">password</p>
-                <input value={password} onChange={(e) => setPassword(e.target.value)} type={"password"} className='w-36 rounded h-6 mt-1 focus:outline-none' />
+                <input value={state.password} onChange={handlePassword} type={"password"} className='w-36 rounded h-6 mt-1 focus:outline-none' />
               </div>
               <div className='flex justify-end mt-8'>
                 <button type={"submit"} className={buttonCss}>Login</button>
@@ -91,10 +126,9 @@ function App() {
       )
   )
 
-
   return (
       <main className="App mt-10">
-        {loggedIn ?  loggedInPage: loginForm}
+        {state.loggedIn ?  loggedInPage: loginForm}
       </main>
   );
 }
